@@ -18,28 +18,9 @@ const timer = (function () {
         const now = Date.now();
         const then = now + seconds * 1000;
         if (timerDisplay.textContent) stop();
-        displayTimeLeft(seconds);
         displayEndTime(then);
+        seconds <= 3600 ? displayTimeLeft(seconds) : seconds <= 86400 ? hoursTimeLeft(seconds) : daysTimeLeft(seconds);
 
-        countdown = setInterval(() => {
-            const secondsLeft = Math.round((then - Date.now()) / 1000);
-            if (secondsLeft < 0) {
-                clearInterval(countdown);
-                alarmSound.play();
-                return;
-            }
-            displayTimeLeft(secondsLeft);
-        }, 1000);
-    }
-
-    function startHours(seconds) {
-        if (typeof seconds !== "number") return new Error('Please provide seconds!');
-
-        const now = Date.now();
-        const then = now + seconds * 1000;
-        if (timerDisplay.textContent) stop();
-        hoursTimeLeft(seconds);
-        displayEndTime(then);
 
 
         countdown = setInterval(() => {
@@ -49,29 +30,7 @@ const timer = (function () {
                 alarmSound.play();
                 return;
             }
-            hoursTimeLeft(secondsLeft);
-        }, 1000);
-    }
-
-    function startDays(seconds) {
-        if (typeof seconds !== "number") return new Error('Please provide seconds!');
-
-        const now = Date.now();
-        const then = now + seconds * 1000;
-        if (timerDisplay.textContent) stop();
-
-        daysTimeLeft(seconds);
-        displayEndTime(then);
-
-        countdown = setInterval(() => {
-            const secondsLeft = Math.round((then - Date.now()) / 1000);
-            if (secondsLeft < 0) {
-                clearInterval(countdown);
-                alarmSound.play();
-                return;
-            }
-
-            daysTimeLeft(secondsLeft);
+            seconds <= 3600 ? displayTimeLeft(secondsLeft) : seconds <= 86400 ? hoursTimeLeft(secondsLeft) : daysTimeLeft(secondsLeft);
         }, 1000);
     }
 
@@ -129,9 +88,7 @@ const timer = (function () {
     return {
         init,
         start,
-        stop,
-        startHours,
-        startDays
+        stop
     }
 })();
 
@@ -159,9 +116,8 @@ function stopTimer(e) {
 function inputTimer(e) {
     e.preventDefault();
     const seconds = Number(e.target.minutes.value * 60);
-    seconds <= 3600 ? timer.start(seconds) : seconds <= 86400 ? timer.startHours(seconds) : timer.startDays(seconds);
+    timer.start(seconds);
 }
-
 
 buttons.forEach(btn => btn.addEventListener('click', startTimer));
 stopBtn.addEventListener('click', stopTimer);
